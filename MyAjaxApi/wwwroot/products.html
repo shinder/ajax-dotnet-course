@@ -18,8 +18,9 @@
 <main>
     <h1>商品管理</h1>
     <form id="addForm">
-        <input type="text"   name="name"  placeholder="商品名稱" required />
-        <input type="number" name="price" placeholder="價格" min="0.01" step="0.01" required style="max-width:120px" />
+        <input type="text"   name="name"     placeholder="商品名稱" required />
+        <input type="number" name="price"    placeholder="價格" min="0.01" step="0.01" required style="max-width:120px" />
+        <input type="url"    name="imageUrl" placeholder="圖片網址（選填，須 https）" />
         <button type="submit" class="btn-primary">新增</button>
     </form>
     <ul id="productList"></ul>
@@ -41,6 +42,7 @@ async function loadProducts() {
     const list = document.getElementById('productList');
     list.innerHTML = products.map(p => `
         <li data-id="${p.id}">
+            ${p.imageUrl ? `<img src="${p.imageUrl}" alt="" style="width:40px;height:40px;object-fit:cover;border-radius:.25rem" />` : ''}
             <span>${p.name}</span>
             <span class="price">$${p.price}</span>
             <button class="btn-danger btn-delete">刪除</button>
@@ -53,15 +55,23 @@ document.getElementById('addForm').addEventListener('submit', async e => {
     const btn = e.target.querySelector('button');
     btn.disabled = true;
     try {
+        const imageUrl = e.target.imageUrl.value.trim();
         await api.post('/api/products', {
             name: e.target.name.value.trim(),
-            price: Number(e.target.price.value)
+            price: Number(e.target.price.value),
+            imageUrl: imageUrl || null
         });
         showToast('新增成功', 'success');
         e.target.reset();
         await loadProducts();
     } catch (err) {
-        showToast(err.message, 'error');
+        // 後端回傳 400 + Problem Details 時，errors 欄位含各欄位的錯誤訊息
+        if (err.status === 400 && err.data?.errors) {
+            const messages = Object.values(err.data.errors).flat().join('\n');
+            showToast(messages, 'error');
+        } else {
+            showToast(err.message, 'error');
+        }
     } finally {
         btn.disabled = false;
     }

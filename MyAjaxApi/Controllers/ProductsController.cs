@@ -63,6 +63,7 @@ public class ProductsController : ControllerBase
         {
             Name = dto.Name,
             Price = dto.Price,
+            ImageUrl = dto.ImageUrl,
             CreatedAt = DateTime.UtcNow   // 時間由伺服器設定，不信任用戶端
         };
 
@@ -87,6 +88,7 @@ public class ProductsController : ControllerBase
         // SaveChangesAsync 時會自動產生 UPDATE SQL
         product.Name = dto.Name;
         product.Price = dto.Price;
+        product.ImageUrl = dto.ImageUrl;
         await _db.SaveChangesAsync();
 
         // 204 No Content：更新成功，不回傳資料（前端不需要）
