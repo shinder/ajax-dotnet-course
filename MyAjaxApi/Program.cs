@@ -59,7 +59,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 // ── FluentValidation ──────────────────────────────────────────
 // 自動掃描目前組件內所有繼承 AbstractValidator<T> 的驗證類別，
-// 並在 Model Binding 時自動執行驗證，驗證失敗回傳 400。
+// 並在 Model Binding 時自動執行驗證，驗證結果寫入 ModelState。
+// 由於 DTO 上沒有 Data Annotations，ModelState 只會收到 FluentValidation 的錯誤。
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
