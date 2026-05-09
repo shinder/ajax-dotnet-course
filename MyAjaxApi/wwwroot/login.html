@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8" />
+    <title>登入 — MyAjaxApi</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+        .login-box {
+            max-width: 360px;
+            margin: 6rem auto;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: .75rem;
+            padding: 2rem;
+        }
+        .login-box h1 { text-align: center; margin-bottom: 1.5rem; }
+        .login-box form { flex-direction: column; }
+        .error-msg { color: #ef4444; font-size: .9rem; display: none; }
+    </style>
+</head>
+<body>
+<div class="login-box">
+    <h1>登入</h1>
+    <form id="loginForm">
+        <input type="text"     name="username" placeholder="帳號" required />
+        <input type="password" name="password" placeholder="密碼" required />
+        <button type="submit" class="btn-primary">登入</button>
+        <p class="error-msg" id="errMsg"></p>
+    </form>
+    <p style="margin-top:1rem;font-size:.85rem;color:#6b7280">示範帳號：admin / password</p>
+</div>
+<script type="module">
+import { login } from '/js/auth.js';
+
+document.getElementById('loginForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    const errMsg = document.getElementById('errMsg');
+    btn.disabled = true;
+    errMsg.style.display = 'none';
+
+    try {
+        await login(e.target.username.value, e.target.password.value);
+        location.href = '/index.html';
+    } catch (err) {
+        errMsg.textContent = err.message;
+        errMsg.style.display = 'block';
+    } finally {
+        btn.disabled = false;
+    }
+});
+</script>
+</body>
+</html>

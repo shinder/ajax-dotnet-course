@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8" />
+    <title>商品管理 — MyAjaxApi</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+        .price { color: #6b7280; font-size: .9rem; min-width: 80px; }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="/index.html">待辦清單</a>
+    <a href="/products.html">商品管理</a>
+    <span class="spacer"></span>
+    <a href="#" id="logoutBtn">登出</a>
+</nav>
+<main>
+    <h1>商品管理</h1>
+    <form id="addForm">
+        <input type="text"   name="name"  placeholder="商品名稱" required />
+        <input type="number" name="price" placeholder="價格" min="0.01" step="0.01" required style="max-width:120px" />
+        <button type="submit" class="btn-primary">新增</button>
+    </form>
+    <ul id="productList"></ul>
+</main>
+<script type="module">
+import { api } from '/js/api.js';
+import { logout, isLoggedIn } from '/js/auth.js';
+import { showToast } from '/js/toast.js';
+
+if (!isLoggedIn()) location.href = '/login.html';
+
+document.getElementById('logoutBtn').addEventListener('click', e => {
+    e.preventDefault();
+    logout();
+});
+
+async function loadProducts() {
+    const products = await api.get('/api/products');
+    const list = document.getElementById('productList');
+    list.innerHTML = products.map(p => `
+        <li data-id="${p.id}">
+            <span>${p.name}</span>
+            <span class="price">$${p.price}</span>
+            <button class="btn-danger btn-delete">刪除</button>
+        </li>
+    `).join('');
+}
+
+document.getElementById('addForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    btn.disabled = true;
+    try {
+        await api.post('/api/products', {
+            name: e.target.name.value.trim(),
+            price: Number(e.target.price.value)
+        });
+        showToast('新增成功', 'success');
+        e.target.reset();
+        await loadProducts();
+    } catch (err) {
+        showToast(err.message, 'error');
+    } finally {
+        btn.disabled = false;
+    }
+});
+
+document.getElementById('productList').addEventListener('click', async e => {
+    if (!e.target.classList.contains('btn-delete')) return;
+    const li = e.target.closest('li');
+    const id = Number(li.dataset.id);
+    const btn = e.target;
+
+    btn.disabled = true;
+    li.remove();
+    try {
+        await api.delete(`/api/products/${id}`);
+    } catch {
+        await loadProducts();
+        showToast('刪除失敗', 'error');
+    }
+});
+
+loadProducts();
+</script>
+</body>
+</html>
