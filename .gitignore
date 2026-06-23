@@ -6,3 +6,5 @@ obj/
 .vs/
 .vscode/
 appsettings.Development.json
+
+docs/ajax-restful-dotnet.md

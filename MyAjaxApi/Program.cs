@@ -1,9 +1,6 @@
-using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using MyAjaxApi.Data;
 using MyAjaxApi.Infrastructure;
 
@@ -28,34 +25,6 @@ builder.Services.AddSwaggerGen();
 // 每個 HTTP 請求會建立一個新的 DbContext 實例，請求結束後釋放。
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlite(builder.Configuration.GetConnectionString("Default")));
-
-// ── JWT 身份驗證 ──────────────────────────────────────────────
-// 告訴 ASP.NET Core：預設使用 JWT Bearer Token 做身份驗證。
-// 之後 UseAuthentication() Middleware 會用這裡設定的參數驗 Token。
-var jwtConfig = builder.Configuration.GetSection("Jwt");
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(opt =>
-    {
-        opt.TokenValidationParameters = new TokenValidationParameters
-        {
-            // 驗證 Token 是否由我們的伺服器簽發
-            ValidateIssuer = true,
-            ValidIssuer = jwtConfig["Issuer"],
-
-            // 驗證 Token 的目標對象是否正確
-            ValidateAudience = true,
-            ValidAudience = jwtConfig["Audience"],
-
-            // 驗證 Token 是否過期
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero,   // 不允許寬容時間（預設 5 分鐘）
-
-            // 驗證簽章，防止 Token 被偽造
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtConfig["Key"]!))
-        };
-    });
 
 // ── FluentValidation ──────────────────────────────────────────
 // 自動掃描目前組件內所有繼承 AbstractValidator<T> 的驗證類別，
@@ -108,20 +77,16 @@ if (app.Environment.IsDevelopment())
 // 全域例外處理（放最前面，才能攔截後續 Middleware 的錯誤）
 app.UseExceptionHandler();
 
-// CORS 必須放在 UseAuthentication / UseAuthorization 之前，
-// 否則 Preflight（OPTIONS）請求會被驗證擋掉
+// CORS 必須放在授權中介軟體之前，
+// 否則 Preflight（OPTIONS）請求可能被擋掉
 app.UseCors("AllowFrontend");
 
 // 提供 wwwroot 內的靜態檔案（HTML / JS / CSS）
 app.UseDefaultFiles();   // / → /index.html
 app.UseStaticFiles();
 
-// UseAuthentication：讀取 Authorization Header，驗 JWT，
-//   成功則把使用者身份寫入 HttpContext.User
-app.UseAuthentication();
-
-// UseAuthorization：讀取 endpoint 上的 [Authorize] 標記，
-//   檢查 HttpContext.User 是否符合要求，不符合回 401/403
+// UseAuthorization：授權中介軟體。本範例沒有需要登入的端點，
+//   保留為 .NET 範本慣例；登入與 [Authorize] 保護見另一門 JWT 課程。
 app.UseAuthorization();
 
 app.MapControllers();

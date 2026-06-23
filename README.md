@@ -23,11 +23,7 @@ dotnet run
 
 > 第一次啟動會自動建立 `app.db`（SQLite），不需要手動執行 Migration。
 
-### 示範帳號
-
-| 帳號 | 密碼 |
-|------|------|
-| admin | password |
+> 本範例不需要登入即可操作；`api.js` 仍保留「有 token 就帶上 `Authorization`、遇 401 清除 token」的通用寫法作為示範。完整登入／JWT 見另一門課程。
 
 ---
 
@@ -36,7 +32,6 @@ dotnet run
 ```
 MyAjaxApi/
 ├── Controllers/
-│   ├── AuthController.cs       # POST /api/auth/login
 │   ├── ProductsController.cs   # CRUD /api/products
 │   └── TodosController.cs      # CRUD /api/todos
 ├── Data/
@@ -44,7 +39,6 @@ MyAjaxApi/
 ├── Infrastructure/
 │   └── GlobalExceptionHandler.cs
 ├── Models/
-│   ├── Auth.cs                 # LoginDto
 │   ├── Product.cs              # Product + DTOs
 │   └── Todo.cs                 # Todo + DTOs
 ├── wwwroot/
@@ -53,7 +47,6 @@ MyAjaxApi/
 │   ├── login.html              # 登入頁
 │   ├── js/
 │   │   ├── api.js              # Fetch 封裝（apiFetch wrapper）
-│   │   ├── auth.js             # Token 管理（login / logout）
 │   │   └── toast.js            # Toast 通知元件
 │   └── css/
 │       └── style.css
@@ -77,7 +70,6 @@ cd MyAjaxApi
 ```bash
 dotnet add package Microsoft.EntityFrameworkCore.Sqlite
 dotnet add package Microsoft.EntityFrameworkCore.Tools
-dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
 dotnet add package FluentValidation.AspNetCore
 dotnet add package Swashbuckle.AspNetCore
 ```
@@ -108,12 +100,6 @@ dotnet run
 
 ## API 端點
 
-### Auth
-
-| 方法 | 路徑 | 說明 |
-|------|------|------|
-| POST | `/api/auth/login` | 登入，回傳 JWT |
-
 ### Todos
 
 | 方法 | 路徑 | 說明 |
@@ -123,7 +109,7 @@ dotnet run
 | PATCH | `/api/todos/{id}` | 更新完成狀態 |
 | DELETE | `/api/todos/{id}` | 刪除待辦 |
 
-### Products（需登入）
+### Products
 
 | 方法 | 路徑 | 說明 |
 |------|------|------|

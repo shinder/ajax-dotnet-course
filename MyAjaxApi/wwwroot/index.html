@@ -9,8 +9,6 @@
 <nav>
     <a href="/index.html">待辦清單</a>
     <a href="/products.html">商品管理</a>
-    <span class="spacer"></span>
-    <a href="#" id="logoutBtn">登出</a>
 </nav>
 <main>
     <h1>待辦清單</h1>
@@ -22,15 +20,7 @@
 </main>
 <script type="module">
 import { api } from '/js/api.js';
-import { logout, isLoggedIn } from '/js/auth.js';
 import { showToast } from '/js/toast.js';
-
-if (!isLoggedIn()) location.href = '/login.html';
-
-document.getElementById('logoutBtn').addEventListener('click', e => {
-    e.preventDefault();
-    logout();
-});
 
 async function loadTodos() {
     const todos = await api.get('/api/todos');

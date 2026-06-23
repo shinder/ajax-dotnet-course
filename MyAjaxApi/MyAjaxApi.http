@@ -1,6 +1,6 @@
 @MyAjaxApi_HostAddress = http://localhost:5269
 
-GET {{MyAjaxApi_HostAddress}}/weatherforecast/
+GET {{MyAjaxApi_HostAddress}}/api/todos
 Accept: application/json
 
 ###

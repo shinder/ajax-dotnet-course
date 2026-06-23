@@ -13,9 +13,8 @@ async function apiFetch(path, options = {}) {
     });
 
     if (res.status === 401) {
+        // token 失效就清掉；本範例沒有登入頁，正式專案通常會在此導向登入
         localStorage.removeItem('token');
-        location.href = '/login.html';
-        return;
     }
 
     if (!res.ok) {
