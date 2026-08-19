@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MyAjaxApi.Infrastructure;
 
@@ -23,14 +24,14 @@ public class GlobalExceptionHandler : IExceptionHandler
         // 把完整錯誤記錄到 Log（伺服器端可查），但不回傳給用戶端
         _logger.LogError(exception, "未預期的錯誤");
 
-        ctx.Response.StatusCode = StatusCodes.Status500InternalServerError;
-
-        // 回傳簡化的錯誤訊息，不含敏感的 Stack Trace
-        await ctx.Response.WriteAsJsonAsync(new
+        // 回傳標準 ProblemDetails 格式的錯誤，不含敏感的 Stack Trace
+        var problem = new ProblemDetails
         {
-            title = "伺服器發生錯誤，請稍後再試",
-            status = 500
-        }, ct);
+            Status = StatusCodes.Status500InternalServerError,
+            Title = "伺服器發生錯誤，請稍後再試"
+        };
+        ctx.Response.StatusCode = problem.Status.Value;
+        await ctx.Response.WriteAsJsonAsync(problem, ct);
 
         return true;
     }

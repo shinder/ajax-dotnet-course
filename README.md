@@ -41,17 +41,19 @@ MyAjaxApi/
 ├── Models/
 │   ├── Product.cs              # Product + DTOs
 │   └── Todo.cs                 # Todo + DTOs
+├── Validators/
+│   ├── CreateProductValidator.cs   # FluentValidation 驗證規則
+│   └── UpdateProductValidator.cs
 ├── wwwroot/
 │   ├── index.html              # 待辦清單頁
 │   ├── products.html           # 商品管理頁
-│   ├── login.html              # 登入頁
 │   ├── js/
 │   │   ├── api.js              # Fetch 封裝（apiFetch wrapper）
 │   │   └── toast.js            # Toast 通知元件
 │   └── css/
 │       └── style.css
 ├── Program.cs                  # 服務注入 + Middleware 設定
-└── appsettings.json            # JWT / 連線字串設定
+└── appsettings.json            # 連線字串設定
 ```
 
 ---
