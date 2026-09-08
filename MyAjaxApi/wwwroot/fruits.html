@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8" />
+    <title>水果清單 — MyAjaxApi</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { padding: .5rem .75rem; border-bottom: 1px solid #e5e7eb; text-align: left; }
+        th { color: #6b7280; font-weight: 600; font-size: .9rem; }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="/index.html">待辦清單</a>
+    <a href="/fruits.html">水果清單</a>
+    <a href="/products.html">商品管理</a>
+</nav>
+<main>
+    <h1>水果清單</h1>
+    <!-- 對應講義第 3 章的 In-Memory FruitsController（/api/fruits），重啟伺服器資料會歸零 -->
+    <form id="addForm">
+        <input type="text"   name="name"  placeholder="水果名稱" required />
+        <input type="number" name="price" placeholder="價格" min="0" step="1" required style="max-width:120px" />
+        <button type="submit" class="btn-primary">新增</button>
+    </form>
+    <table id="fruit-table">
+        <thead>
+            <tr><th>Id</th><th>名稱</th><th>價格</th><th></th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</main>
+<script type="module">
+import { api } from '/js/api.js';
+import { showToast } from '/js/toast.js';
+
+// 5-5 動態操作 DOM：先組好字串，再一次塞進 DOM
+function renderFruits(fruits) {
+    const html = fruits.map(p => `
+        <tr data-id="${p.id}">
+            <td>${p.id}</td>
+            <td>${p.name}</td>
+            <td>${p.price}</td>
+            <td><button data-id="${p.id}" class="btn-danger btn-del">刪除</button></td>
+        </tr>
+    `).join('');
+
+    document.querySelector('#fruit-table tbody').innerHTML = html;
+}
+
+// 5-6 載入狀態：載入中、成功有資料、成功但空、失敗，四種狀態都要照顧
+async function loadFruits() {
+    const tbody = document.querySelector('#fruit-table tbody');
+    tbody.innerHTML = '<tr><td colspan="4">載入中…</td></tr>';
+
+    try {
+        const fruits = await api.get('/api/fruits');
+        if (fruits.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4">目前沒有水果</td></tr>';
+            return;
+        }
+        renderFruits(fruits);
+    } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="4">載入失敗：${err.message}</td></tr>`;
+    }
+}
+
+// 6-3 Optimistic UI：先把該列移除，失敗再重新載入復原
+async function deleteFruit(id, rowElement) {
+    rowElement.remove();
+
+    try {
+        await api.delete(`/api/fruits/${id}`);
+    } catch (err) {
+        showToast('刪除失敗，已復原', 'error');
+        await loadFruits();
+    }
+}
+
+document.getElementById('addForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    btn.disabled = true;
+    try {
+        await api.post('/api/fruits', {
+            name: e.target.name.value.trim(),
+            price: Number(e.target.price.value)
+        });
+        showToast('新增成功', 'success');
+        e.target.reset();
+        await loadFruits();
+    } catch (err) {
+        showToast(err.message, 'error');
+    } finally {
+        btn.disabled = false;
+    }
+});
+
+// 事件委派：tbody 只掛一個 click 監聽，判斷點到的是不是刪除鈕
+document.querySelector('#fruit-table tbody').addEventListener('click', e => {
+    if (!e.target.classList.contains('btn-del')) return;
+    const tr = e.target.closest('tr');
+    deleteFruit(Number(tr.dataset.id), tr);
+});
+
+loadFruits();
+</script>
+</body>
+</html>
