@@ -4,6 +4,9 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- dotnet watch 預設監看 wwwroot/**，上傳檔案落到 wwwroot/uploads 會觸發瀏覽器重新整理，
+         把上傳頁的結果洗掉；把這個資料夾排除在監看之外（.NET 10 起支援 DefaultItemExcludes 排除資料夾） -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);wwwroot/uploads/**</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>

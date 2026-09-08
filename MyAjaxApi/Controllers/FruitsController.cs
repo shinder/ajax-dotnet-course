@@ -57,4 +57,26 @@ public class FruitsController : ControllerBase
         _fruits.Remove(fruit);
         return NoContent();
     }
+
+    // 上傳：POST /api/fruits/upload（multipart/form-data）→ 200 或 400
+    // 對應講義 6-1。IFormFile 參數在 [ApiController] 下會自動從表單讀取。
+    [HttpPost("upload")]
+    public async Task<IActionResult> Upload(IFormFile file, [FromForm] string note)
+    {
+        if (file is null || file.Length == 0)
+            return BadRequest("沒有收到檔案");
+
+        var dir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+        Directory.CreateDirectory(dir);
+
+        // 用隨機檔名儲存，避免覆蓋與路徑穿越；System.IO.File 要寫全名，因為 ControllerBase 也有 File() 方法
+        var savedName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        var fullPath = Path.Combine(dir, savedName);
+
+        await using var stream = System.IO.File.Create(fullPath);
+        await file.CopyToAsync(stream);
+
+        // wwwroot 由 UseStaticFiles 提供，回傳的 url 可直接在瀏覽器開啟
+        return Ok(new { url = $"/uploads/{savedName}", size = file.Length, note });
+    }
 }
