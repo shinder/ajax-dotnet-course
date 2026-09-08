@@ -7,17 +7,58 @@ namespace MyAjaxApi.Controllers;
 [Route("api/[controller]")]
 public class FruitsController : ControllerBase
 {
-    // 暫時用靜態 List 當資料來源
+    // 暫時用靜態 List 當資料來源（多放幾筆，分頁才看得出效果）
     private static readonly List<Fruit> _fruits = new()
     {
-        new Fruit { Id = 1, Name = "蘋果", Price = 30 },
-        new Fruit { Id = 2, Name = "香蕉", Price = 15 },
+        new Fruit { Id = 1,  Name = "蘋果",   Price = 30 },
+        new Fruit { Id = 2,  Name = "香蕉",   Price = 15 },
+        new Fruit { Id = 3,  Name = "芒果",   Price = 50 },
+        new Fruit { Id = 4,  Name = "鳳梨",   Price = 45 },
+        new Fruit { Id = 5,  Name = "西瓜",   Price = 120 },
+        new Fruit { Id = 6,  Name = "葡萄",   Price = 80 },
+        new Fruit { Id = 7,  Name = "草莓",   Price = 150 },
+        new Fruit { Id = 8,  Name = "芭樂",   Price = 25 },
+        new Fruit { Id = 9,  Name = "木瓜",   Price = 35 },
+        new Fruit { Id = 10, Name = "荔枝",   Price = 90 },
+        new Fruit { Id = 11, Name = "柳丁",   Price = 20 },
+        new Fruit { Id = 12, Name = "奇異果", Price = 40 },
     };
-    private static int _nextId = 3;
+    private static int _nextId = 13;
 
-    // 取得全部：GET /api/fruits → 200
+    // 取得列表：GET /api/fruits?name=果&sort=price_desc&page=1&size=5 → 200
+    // 搜尋、排序、分頁都是「條件」而不是「資源」，一律放查詢字串（講義 1-4、5-8）。
+    // 簡單型別參數在 [ApiController] 下預設從查詢字串取，[FromQuery] 可省略，這裡標出來是為了清楚。
     [HttpGet]
-    public ActionResult<IEnumerable<Fruit>> GetAll() => Ok(_fruits);
+    public ActionResult<PagedResult<Fruit>> GetAll(
+        [FromQuery] string? name,
+        [FromQuery] string? sort,
+        [FromQuery] int page = 1,
+        [FromQuery] int size = 5)
+    {
+        IEnumerable<Fruit> query = _fruits;
+
+        // 篩選：名稱包含關鍵字（不分大小寫）
+        if (!string.IsNullOrWhiteSpace(name))
+            query = query.Where(f => f.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
+
+        // 排序：只接受白名單裡的值，其他一律回到預設
+        query = sort switch
+        {
+            "name"       => query.OrderBy(f => f.Name),
+            "price"      => query.OrderBy(f => f.Price),
+            "price_desc" => query.OrderByDescending(f => f.Price),
+            _            => query.OrderBy(f => f.Id),
+        };
+
+        // 分頁：防止前端送 page=0 或 size=100000 這種值
+        page = Math.Max(page, 1);
+        size = Math.Clamp(size, 1, 100);
+
+        var total = query.Count();
+        var items = query.Skip((page - 1) * size).Take(size).ToList();
+
+        return Ok(new PagedResult<Fruit> { Items = items, Total = total, Page = page, Size = size });
+    }
 
     // 取得單筆：GET /api/fruits/5 → 200 或 404
     [HttpGet("{id:int}")]
