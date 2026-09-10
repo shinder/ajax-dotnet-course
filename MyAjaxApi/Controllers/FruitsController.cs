@@ -60,6 +60,21 @@ public class FruitsController : ControllerBase
         return Ok(new PagedResult<Fruit> { Items = items, Total = total, Page = page, Size = size });
     }
 
+    // 慢速回應：GET /api/fruits/slow?seconds=10 → 等待指定秒數後才回傳全部水果
+    // 教學用：用同步的 XHR（xhr.open(..., false)）呼叫這支，可以看到整個頁面在等待期間完全卡死；
+    // 改用非同步呼叫則頁面照常可以操作，這就是 AJAX 的 A（Asynchronous）存在的理由。
+    // 路由要放在 {id:int} 之前沒關係，因為 "slow" 不是整數，不會被 GetById 搶走。
+    [HttpGet("slow")]
+    public async Task<ActionResult<object>> GetSlow([FromQuery] int seconds = 10, CancellationToken ct = default)
+    {
+        seconds = Math.Clamp(seconds, 1, 30);
+
+        // 傳入 CancellationToken：使用者關閉頁面或取消請求時，伺服器不會繼續空等
+        await Task.Delay(TimeSpan.FromSeconds(seconds), ct);
+
+        return Ok(new { waitedSeconds = seconds, items = _fruits });
+    }
+
     // 取得單筆：GET /api/fruits/5 → 200 或 404
     [HttpGet("{id:int}")]
     public ActionResult<Fruit> GetById(int id)
