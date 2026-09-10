@@ -25,6 +25,9 @@ public class FruitsController : ControllerBase
     };
     private static int _nextId = 13;
 
+    // 給 NotificationsController 的 SSE 推送用：目前的水果總數
+    public static int Count => _fruits.Count;
+
     // 取得列表：GET /api/fruits?name=果&sort=price_desc&page=1&size=5 → 200
     // 搜尋、排序、分頁都是「條件」而不是「資源」，一律放查詢字串（講義 1-4、5-8）。
     // 簡單型別參數在 [ApiController] 下預設從查詢字串取，[FromQuery] 可省略，這裡標出來是為了清楚。
