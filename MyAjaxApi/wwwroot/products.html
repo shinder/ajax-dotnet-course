@@ -31,12 +31,13 @@
 import { api } from '/js/api.js';
 import { showToast } from '/js/toast.js';
 
+// 圖片網址是使用者填的，不保證存在；載入失敗時用 onerror 把 <img> 移掉，避免出現破圖
 async function loadProducts() {
     const products = await api.get('/api/products');
     const list = document.getElementById('productList');
     list.innerHTML = products.map(p => `
         <li data-id="${p.id}">
-            ${p.imageUrl ? `<img src="${p.imageUrl}" alt="" style="width:40px;height:40px;object-fit:cover;border-radius:.25rem" />` : ''}
+            ${p.imageUrl ? `<img src="${p.imageUrl}" alt="" onerror="this.remove()" style="width:40px;height:40px;object-fit:cover;border-radius:.25rem" />` : ''}
             <span>${p.name}</span>
             <span class="price">$${p.price}</span>
             <span class="time">${new Date(p.createdAt).toLocaleString('zh-TW')}</span>
