@@ -48,9 +48,12 @@
                     <option value="10">10</option>
                 </select>
             </label>
-            <button id="btn-sync"  class="btn-warn">同步 XHR（頁面會卡住）</button>
-            <button id="btn-async" class="btn-primary">非同步 XHR</button>
-            <button id="btn-fetch" class="btn-primary">fetch</button>
+            <span id="buttons">
+                <button id="btn-sync"  class="btn-warn">同步 XHR（頁面會卡住）</button>
+                <button id="btn-async" class="btn-primary">非同步 XHR</button>
+                <button id="btn-fetch" class="btn-primary">fetch</button>
+            </span>
+            <span id="busy" class="hint" hidden>請求進行中，按鈕先收起來…</span>
         </div>
         <div class="log" id="log">按下任一按鈕開始。</div>
     </section>
@@ -65,11 +68,18 @@ const logEl = document.getElementById('log');
 const log = (msg) => { logEl.textContent += `\n[${new Date().toLocaleTimeString('zh-TW')}] ${msg}`; };
 const url = () => `/api/fruits/slow?seconds=${document.getElementById('seconds').value}`;
 
+// 請求進行中把按鈕收起來，避免重複送出；資料回來再顯示
+function setBusy(busy) {
+    document.getElementById('buttons').hidden = busy;
+    document.getElementById('busy').hidden = !busy;
+}
+
 // ── 同步 XHR：open 的第三個參數 false ─────────────────────────
 // send() 會一直等到回應回來才返回，這段期間整個分頁凍結：
 // 計數器停止、打字無效、按鈕沒反應、連捲動都不行。
 document.getElementById('btn-sync').addEventListener('click', () => {
     logEl.textContent = '同步 XHR 開始，注意計數器與輸入框…';
+    setBusy(true);   // 注意：這個 DOM 變更在 send() 卡住期間不會被畫出來，因為「重繪」也要等主執行緒空閒
     const started = performance.now();
 
     const xhr = new XMLHttpRequest();
@@ -77,21 +87,26 @@ document.getElementById('btn-sync').addEventListener('click', () => {
     xhr.send();                      // 卡在這一行，直到伺服器回應
 
     const data = JSON.parse(xhr.responseText);
+    setBusy(false);
     log(`同步 XHR 完成，等了 ${((performance.now() - started) / 1000).toFixed(1)} 秒，拿到 ${data.items.length} 筆。`);
     log('期間計數器沒有跳、打字也沒有反應，因為主執行緒被 send() 佔住了。');
+    log('連「把按鈕收起來」都沒畫出來：DOM 改了，但瀏覽器要等主執行緒空下來才會重繪。');
 });
 
 // ── 非同步 XHR：預設就是非同步，用 onload 接結果 ────────────────
 document.getElementById('btn-async').addEventListener('click', () => {
     logEl.textContent = '非同步 XHR 開始，試著打字、看計數器…';
+    setBusy(true);                   // 這裡會立刻畫出來，因為 send() 馬上返回、主執行緒馬上空閒
     const started = performance.now();
 
     const xhr = new XMLHttpRequest();
     xhr.open('GET', url());          // 省略第三個參數 = true = 非同步
     xhr.onload = () => {
         const data = JSON.parse(xhr.responseText);
+        setBusy(false);
         log(`非同步 XHR 完成，等了 ${((performance.now() - started) / 1000).toFixed(1)} 秒，拿到 ${data.items.length} 筆。`);
     };
+    xhr.onerror = () => { setBusy(false); log('網路錯誤'); };
     xhr.send();                      // 立刻返回，不等回應
 
     log('send() 已返回，這行在回應回來之前就印出來了。');
@@ -100,14 +115,21 @@ document.getElementById('btn-async').addEventListener('click', () => {
 // ── fetch：只有非同步，沒有同步模式 ──────────────────────────────
 document.getElementById('btn-fetch').addEventListener('click', async () => {
     logEl.textContent = 'fetch 開始，試著打字、看計數器…';
+    setBusy(true);
     const started = performance.now();
 
-    const pending = fetch(url());
-    log('fetch() 已返回 Promise，這行在回應回來之前就印出來了。');
+    try {
+        const pending = fetch(url());
+        log('fetch() 已返回 Promise，這行在回應回來之前就印出來了。');
 
-    const res = await pending;       // await 只是「讓出」主執行緒，不是「卡住」
-    const data = await res.json();
-    log(`fetch 完成，等了 ${((performance.now() - started) / 1000).toFixed(1)} 秒，拿到 ${data.items.length} 筆。`);
+        const res = await pending;   // await 只是「讓出」主執行緒，不是「卡住」
+        const data = await res.json();
+        log(`fetch 完成，等了 ${((performance.now() - started) / 1000).toFixed(1)} 秒，拿到 ${data.items.length} 筆。`);
+    } catch (err) {
+        log(`fetch 失敗：${err.message}`);
+    } finally {
+        setBusy(false);              // 成功失敗都要把按鈕放回來
+    }
 });
 </script>
 </body>
