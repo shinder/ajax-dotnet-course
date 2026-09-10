@@ -24,13 +24,11 @@ nav {
 }
 nav a { color: #cbd5e1; text-decoration: none; font-size: .95rem; }
 nav a:hover { color: #fff; }
-nav .spacer { flex: 1; }
 
 /* 表單 */
 form { display: flex; gap: .5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
 input[type="text"],
-input[type="number"],
-input[type="password"] {
+input[type="number"] {
     flex: 1;
     min-width: 0;
     padding: .5rem .75rem;
@@ -50,6 +48,19 @@ button {
 .btn-primary:disabled { background: #93c5fd; cursor: default; }
 .btn-danger { background: #ef4444; color: #fff; }
 .btn-danger:hover { background: #dc2626; }
+.btn-secondary { background: #e5e7eb; color: #374151; }
+.btn-secondary:hover { background: #d1d5db; }
+
+/* 示範頁共用的區塊與說明文字 */
+section {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: .5rem;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+}
+section h2 { margin: 0 0 .75rem; font-size: 1.1rem; }
+.hint { color: #6b7280; font-size: .9rem; }
 
 /* 清單 */
 ul { list-style: none; padding: 0; margin: 0; }

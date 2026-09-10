@@ -18,23 +18,30 @@ public class NotificationsController : ControllerBase
         // 這些 Header 一定要在第一次寫入 Body 之前設定
         Response.ContentType = "text/event-stream";
         Response.Headers.CacheControl = "no-cache";
-        Response.Headers.Connection = "keep-alive";
 
-        // ct 會在瀏覽器關閉連線（source.close() 或關掉分頁）時被取消，迴圈就會結束
-        for (var i = 1; !ct.IsCancellationRequested; i++)
+        try
         {
-            var payload = new
+            // ct 會在瀏覽器關閉連線（source.close() 或關掉分頁）時被取消，迴圈就會結束
+            for (var i = 1; !ct.IsCancellationRequested; i++)
             {
-                seq = i,
-                time = DateTime.UtcNow,
-                fruitCount = FruitsController.Count,
-            };
+                var payload = new
+                {
+                    seq = i,
+                    time = DateTime.UtcNow,
+                    fruitCount = FruitsController.Count,
+                };
 
-            // SSE 的格式：每則訊息是一行以 "data: " 開頭的文字，用「空一行」結尾
-            await Response.WriteAsync($"data: {JsonSerializer.Serialize(payload)}\n\n", ct);
-            await Response.Body.FlushAsync(ct);   // 立刻送出，不要卡在緩衝區
+                // SSE 的格式：每則訊息是一行以 "data: " 開頭的文字，用「空一行」結尾
+                await Response.WriteAsync($"data: {JsonSerializer.Serialize(payload)}\n\n", ct);
+                await Response.Body.FlushAsync(ct);   // 立刻送出，不要卡在緩衝區
 
-            await Task.Delay(2000, ct);
+                await Task.Delay(2000, ct);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // 用戶端斷線時 Task.Delay / WriteAsync 會拋這個例外，這是正常結束，不是錯誤；
+            // 不接住的話會進到全域例外處理，在 log 留下一筆假的 500。
         }
     }
 }

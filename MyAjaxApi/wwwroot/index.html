@@ -25,6 +25,7 @@
 <script type="module">
 import { api } from '/js/api.js';
 import { showToast } from '/js/toast.js';
+import { escapeHtml } from '/js/utils.js';
 
 async function loadTodos() {
     const todos = await api.get('/api/todos');
@@ -32,7 +33,7 @@ async function loadTodos() {
     list.innerHTML = todos.map(t => `
         <li class="${t.isDone ? 'done' : ''}" data-id="${t.id}">
             <input type="checkbox" ${t.isDone ? 'checked' : ''} />
-            <span>${t.title}</span>
+            <span>${escapeHtml(t.title)}</span>
             <button class="btn-danger btn-delete">✕</button>
         </li>
     `).join('');
@@ -77,7 +78,8 @@ document.getElementById('todoList').addEventListener('click', async e => {
     }
 });
 
-loadTodos();
+// 首次載入失敗（例如後端沒啟動）要讓使用者知道，不能只留在 Console
+loadTodos().catch(err => showToast(`載入失敗：${err.message}`, 'error'));
 </script>
 </body>
 </html>

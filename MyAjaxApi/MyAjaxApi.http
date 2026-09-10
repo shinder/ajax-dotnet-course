@@ -1,6 +1,152 @@
-@MyAjaxApi_HostAddress = http://localhost:5269
+# 用 VS Code 的 REST Client 擴充套件或 Visual Studio 2022 開啟，
+# 每個請求上方會出現 Send Request，點擊即可送出（講義 1-6）。
+# 請求之間用 ### 分隔。
 
-GET {{MyAjaxApi_HostAddress}}/api/todos
-Accept: application/json
+@baseUrl = http://localhost:5269
 
-###
+### ───────── 第 3 章：Basics ─────────
+
+### 最簡單的端點，回傳 JSON 物件
+GET {{baseUrl}}/api/basics
+
+### ───────── 第 3、5 章：Fruits（In-Memory） ─────────
+
+### 取得列表（預設第 1 頁、每頁 5 筆）
+GET {{baseUrl}}/api/fruits
+
+### 搜尋 + 排序 + 分頁（講義 5-8）
+GET {{baseUrl}}/api/fruits?name=果&sort=price_desc&page=1&size=3
+
+### 頁碼超過範圍會退回最後一頁
+GET {{baseUrl}}/api/fruits?page=999
+
+### 取得單筆
+GET {{baseUrl}}/api/fruits/1
+
+### 找不到 → 404
+GET {{baseUrl}}/api/fruits/999
+
+### 路由約束：不是整數 → 404
+GET {{baseUrl}}/api/fruits/abc
+
+### 新增 → 201 + Location
+POST {{baseUrl}}/api/fruits
+Content-Type: application/json
+
+{
+  "name": "龍眼",
+  "price": 60
+}
+
+### 新增但驗證失敗 → 400 + errors（講義 8-4）
+POST {{baseUrl}}/api/fruits
+Content-Type: application/json
+
+{
+  "name": "",
+  "price": 0
+}
+
+### 完整更新 → 204
+PUT {{baseUrl}}/api/fruits/1
+Content-Type: application/json
+
+{
+  "name": "蘋果",
+  "price": 35
+}
+
+### 刪除 → 204
+DELETE {{baseUrl}}/api/fruits/12
+
+### 慢速回應（講義 4-3 同步 vs 非同步示範），等 3 秒
+GET {{baseUrl}}/api/fruits/slow?seconds=3
+
+### 檔案上傳（講義 6-1）：把 ./wwwroot/uploads 底下任一張圖片的路徑填進去
+POST {{baseUrl}}/api/fruits/upload
+Content-Type: multipart/form-data; boundary=----Boundary
+
+------Boundary
+Content-Disposition: form-data; name="note"
+
+水果圖片
+------Boundary
+Content-Disposition: form-data; name="file"; filename="test.png"
+Content-Type: image/png
+
+< ./wwwroot/uploads/test.png
+------Boundary--
+
+### ───────── 第 6 章：Todos（EF Core） ─────────
+
+### 取得全部
+GET {{baseUrl}}/api/todos
+
+### 取得單筆
+GET {{baseUrl}}/api/todos/1
+
+### 新增
+POST {{baseUrl}}/api/todos
+Content-Type: application/json
+
+{
+  "title": "買菜"
+}
+
+### 部分更新：只改 isDone（PATCH）
+PATCH {{baseUrl}}/api/todos/1
+Content-Type: application/json
+
+{
+  "isDone": true
+}
+
+### 刪除
+DELETE {{baseUrl}}/api/todos/1
+
+### ───────── 第 7 章：Products（EF Core + 驗證） ─────────
+
+### 取得全部（最新的在前）
+GET {{baseUrl}}/api/products
+
+### 取得單筆
+GET {{baseUrl}}/api/products/1
+
+### 新增（imageUrl 選填，有填必須是 https）
+POST {{baseUrl}}/api/products
+Content-Type: application/json
+
+{
+  "name": "香蕉",
+  "price": 15,
+  "imageUrl": null
+}
+
+### 新增但 imageUrl 不是 https → 400
+POST {{baseUrl}}/api/products
+Content-Type: application/json
+
+{
+  "name": "香蕉",
+  "price": 15,
+  "imageUrl": "http://example.com/a.jpg"
+}
+
+### 完整更新
+PUT {{baseUrl}}/api/products/1
+Content-Type: application/json
+
+{
+  "name": "蘋果",
+  "price": 32,
+  "imageUrl": null
+}
+
+### 刪除
+DELETE {{baseUrl}}/api/products/1
+
+### ───────── 第 6 章：SSE ─────────
+
+### 伺服器推送，連線會一直開著、每 2 秒收到一筆；REST Client 會持續顯示，按 Cancel 結束
+GET {{baseUrl}}/api/notifications/stream
+Accept: text/event-stream

@@ -22,6 +22,15 @@ public class TodosController : ControllerBase
         return Ok(todos);
     }
 
+    // GET /api/todos/5
+    // 除了給前端用，CreatedAtAction 也需要它來產生 201 的 Location 標頭
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<Todo>> GetById(int id)
+    {
+        var todo = await _db.Todos.FindAsync(id);
+        return todo is null ? NotFound() : Ok(todo);
+    }
+
     // POST /api/todos
     // Body: { "title": "買菜" }
     [HttpPost]
@@ -32,8 +41,8 @@ public class TodosController : ControllerBase
         _db.Todos.Add(todo);
         await _db.SaveChangesAsync();
 
-        // 201 Created，回傳新建的 todo（含自動產生的 Id）
-        return CreatedAtAction(nameof(GetAll), todo);
+        // 201 Created，Location 指向新資源 /api/todos/{id}，Body 回傳新建的 todo（含自動產生的 Id）
+        return CreatedAtAction(nameof(GetById), new { id = todo.Id }, todo);
     }
 
     // PATCH /api/todos/5

@@ -19,6 +19,8 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
+    <!-- Swashbuckle 傳遞相依的 Microsoft.OpenApi 2.4.1 有 High 等級弱點（GHSA-v5pm-xwqc-g5wc），明確拉高版本 -->
+    <PackageReference Include="Microsoft.OpenApi" Version="2.12.2" />
   </ItemGroup>
 
 </Project>

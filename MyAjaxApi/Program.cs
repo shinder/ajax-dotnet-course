@@ -67,15 +67,15 @@ using (var scope = app.Services.CreateScope())
     db.Database.EnsureCreated();
 }
 
+// 全域例外處理（放最前面，才能攔截後續所有 Middleware 的錯誤）
+app.UseExceptionHandler();
+
 // 開發環境才開放 Swagger UI
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-// 全域例外處理（放最前面，才能攔截後續 Middleware 的錯誤）
-app.UseExceptionHandler();
 
 // CORS 必須放在授權中介軟體之前，
 // 否則 Preflight（OPTIONS）請求可能被擋掉

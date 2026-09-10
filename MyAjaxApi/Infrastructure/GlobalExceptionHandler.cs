@@ -24,6 +24,10 @@ public class GlobalExceptionHandler : IExceptionHandler
         // 把完整錯誤記錄到 Log（伺服器端可查），但不回傳給用戶端
         _logger.LogError(exception, "未預期的錯誤");
 
+        // 回應已經開始送出（例如 SSE 串流寫到一半才出錯）就改不了狀態碼與 Body，
+        // 這時回 false 交回框架處理，避免再拋出第二個例外
+        if (ctx.Response.HasStarted) return false;
+
         // 回傳標準 ProblemDetails 格式的錯誤，不含敏感的 Stack Trace
         var problem = new ProblemDetails
         {

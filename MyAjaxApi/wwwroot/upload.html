@@ -5,8 +5,6 @@
     <title>檔案上傳 — MyAjaxApi</title>
     <link rel="stylesheet" href="/css/style.css" />
     <style>
-        section { background: #fff; border: 1px solid #e5e7eb; border-radius: .5rem; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
-        section h2 { margin: 0 0 .75rem; font-size: 1.1rem; }
         form { margin-bottom: .75rem; align-items: center; }
         progress { width: 100%; height: 1rem; margin-top: .5rem; }
         .result { font-size: .9rem; color: #6b7280; margin-top: .5rem; word-break: break-all; }
@@ -48,15 +46,25 @@
 </main>
 <script type="module">
 import { showToast } from '/js/toast.js';
+import { escapeHtml } from '/js/utils.js';
 
+// 這一頁不用 api.js：它固定送 Content-Type: application/json，FormData 上傳不能用
 const UPLOAD_URL = '/api/fruits/upload';
+
+// 後端驗證失敗會回 400 + ValidationProblemDetails，把 errors 的訊息串起來給使用者看
+async function readError(res) {
+    const body = await res.json().catch(() => ({}));
+    const messages = body.errors ? Object.values(body.errors).flat() : [];
+    return messages.length ? messages.join('、') : (body.title ?? `HTTP ${res.status}`);
+}
 
 // 回傳結果顯示：顯示網址與大小，若是圖片就直接秀出來
 function showResult(el, result) {
     const isImage = /\.(png|jpe?g|gif|webp|svg)$/i.test(result.url);
+    const url = escapeHtml(result.url);   // 回來的資料一律先跳脫再放進 innerHTML
     el.innerHTML = `
-        已儲存：<a href="${result.url}" target="_blank">${result.url}</a>（${result.size} bytes，備註：${result.note}）
-        ${isImage ? `<img src="${result.url}" alt="" />` : ''}
+        已儲存：<a href="${url}" target="_blank">${url}</a>（${result.size} bytes，備註：${escapeHtml(result.note)}）
+        ${isImage ? `<img src="${url}" alt="" />` : ''}
     `;
 }
 
@@ -75,7 +83,7 @@ document.getElementById('fetch-form').addEventListener('submit', async e => {
         // 注意：使用 FormData 時「不要」自己設 Content-Type，
         // 瀏覽器會自動加上含 boundary 的 multipart/form-data
         const res = await fetch(UPLOAD_URL, { method: 'POST', body: formData });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) throw new Error(await readError(res));
         showResult(resultEl, await res.json());
         showToast('上傳成功', 'success');
     } catch (err) {
@@ -101,7 +109,14 @@ function uploadWithProgress(url, formData, onProgress) {
             if (xhr.status >= 200 && xhr.status < 300) {
                 resolve(JSON.parse(xhr.responseText));
             } else {
-                reject(new Error(`HTTP ${xhr.status}`));
+                // 同樣把 ValidationProblemDetails 的 errors 抓出來
+                let message = `HTTP ${xhr.status}`;
+                try {
+                    const body = JSON.parse(xhr.responseText);
+                    const messages = body.errors ? Object.values(body.errors).flat() : [];
+                    message = messages.length ? messages.join('、') : (body.title ?? message);
+                } catch { /* 不是 JSON 就維持 HTTP 狀態碼 */ }
+                reject(new Error(message));
             }
         };
         xhr.onerror = () => reject(new Error('網路錯誤'));

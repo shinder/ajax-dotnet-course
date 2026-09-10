@@ -1,3 +1,6 @@
+// 統一的 fetch 封裝：帶 token、檢查 res.ok、解析 JSON、把錯誤包成帶 status 與 data 的 Error。
+// 注意：這裡固定送 Content-Type: application/json，所以「不能」拿來上傳 FormData，
+// 檔案上傳請直接用 fetch 或 XHR（見 upload.html）。
 const BASE_URL = '';   // 同源，不需要指定主機
 
 async function apiFetch(path, options = {}) {
@@ -34,5 +37,5 @@ export const api = {
     post:   (path, body) => apiFetch(path, { method: 'POST',   body: JSON.stringify(body) }),
     put:    (path, body) => apiFetch(path, { method: 'PUT',    body: JSON.stringify(body) }),
     patch:  (path, body) => apiFetch(path, { method: 'PATCH',  body: JSON.stringify(body) }),
-    delete: (path)       => apiFetch(path, { method: 'DELETE' })
+    delete: (path, options) => apiFetch(path, { method: 'DELETE', ...options })
 };

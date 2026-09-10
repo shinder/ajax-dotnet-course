@@ -10,7 +10,6 @@
         th { color: #6b7280; font-weight: 600; font-size: .9rem; }
         td input { width: 100%; padding: .25rem .5rem; border: 1px solid #d1d5db; border-radius: .25rem; font-size: .95rem; }
         td .actions { display: flex; gap: .25rem; justify-content: flex-end; }
-        .btn-secondary { background: #e5e7eb; color: #374151; }
 
         /* 新增表單：每個欄位底下留一行放驗證訊息 */
         #addForm { align-items: flex-start; }
@@ -244,6 +243,7 @@ async function deleteFruit(id, rowElement) {
 
     try {
         await api.delete(`/api/fruits/${id}`);
+        await loadFruits();   // 成功後也重新載入，讓「共 N 筆」與分頁狀態跟上；使用者看到的仍是先消失、再補齊
     } catch (err) {
         showToast('刪除失敗，已復原', 'error');
         await loadFruits();
