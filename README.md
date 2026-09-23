@@ -210,6 +210,12 @@ dotnet user-secrets init
 dotnet user-secrets set "Jwt:Key" "$(openssl rand -base64 48)"
 ```
 
+`dotnet user-secrets init` 只做一件事：產生一個 GUID 寫進 `.csproj` 的 `<UserSecretsId>`。這個 ID 是專案與機密儲存位置的對應鍵，之後 `set` 會把值寫到使用者目錄下以該 ID 命名的資料夾（路徑見上方「設定簽章金鑰」），程式啟動時設定系統也靠同一個 ID 找到檔案。
+
+- 只需執行一次：ID 隨 csproj 進 git，其他電腦 clone 後直接 `set` 即可。重複執行 `init` 會發現已有 ID 而跳過，不會換新。
+- 沒 `init` 就 `set` 會報找不到 `UserSecretsId`，因為工具不知道該存去哪裡。
+- Development 環境的設定來源由低到高：`appsettings.json`、`appsettings.Development.json`、user-secrets、環境變數、命令列參數，後者覆蓋前者。
+
 ### 3. 安裝 EF Core CLI 工具（全域，只需一次）
 
 ```bash
