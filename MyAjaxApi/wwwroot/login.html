@@ -100,10 +100,12 @@ function showFieldErrors(form, errors = {}) {
     }
 }
 
-// JWT 的第二段是 Base64Url 編碼的 JSON；Base64Url 把 + / 換成 - _ 且省略 = 補位，解碼前要換回來
+// JWT 的第二段是 Base64Url 編碼的 JSON；Base64Url 把 + / 換成 - _ 且省略 = 補位，解碼前要換回來。
+// atob 只會得到 byte 字串，中文等非 ASCII 字元要先轉成 %xx 再用 decodeURIComponent 還原成 UTF-8
 function decodePayload(token) {
     const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-    const json = decodeURIComponent(atob(base64).split('').map(c => '%' + c.charCodeAt(0).padStart(2, '0')).join(''));
+    const json = decodeURIComponent(atob(base64).split('')
+        .map(c => '%' + c.charCodeAt(0).toString(16).padStart(2, '0')).join(''));
     return JSON.parse(json);
 }
 
