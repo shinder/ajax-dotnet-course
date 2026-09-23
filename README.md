@@ -160,51 +160,55 @@ sqlite3 MyAjaxApi/app.db "select Username, PasswordHash from Users;"
 ## 專案結構
 
 ```
-MyAjaxApi/
-├── Controllers/
-│   ├── BasicsController.cs         # GET /api/basics，最簡單的 Controller（講義 3-1）
-│   ├── FruitsController.cs         # In-Memory CRUD /api/fruits，含搜尋/排序/分頁、slow、upload（3-4、5-8、4-3、6-1）
-│   ├── TodosController.cs          # EF Core CRUD /api/todos（6-6、7-4）
-│   ├── ProductsController.cs       # EF Core CRUD /api/products（7-4）
-│   ├── NotificationsController.cs  # SSE /api/notifications/stream（6-2）
-│   └── AuthController.cs           # JWT 註冊、登入、/me（9-6）
-├── Data/
-│   └── AppDbContext.cs             # EF Core DbContext，含 CreatedAt 的 UTC 值轉換器（5-7）
-├── Infrastructure/
-│   └── GlobalExceptionHandler.cs   # 全域例外處理（8-3）
-├── Models/
-│   ├── Fruit.cs                    # Fruit + DTOs（3-3）
-│   ├── PagedResult.cs              # 分頁回應外殼（5-8）
-│   ├── Product.cs                  # Product + DTOs（7-2）
-│   ├── Todo.cs                     # Todo + DTOs（6-6）
-│   └── User.cs                     # User + 註冊、登入 DTOs（9-3）
-├── Services/
-│   └── TokenService.cs             # 簽發 JWT；JwtSettings 對應 appsettings 的 Jwt 區段（9-4）
-├── Validators/                     # FluentValidation 驗證規則（8-2）
-│   ├── CreateFruitValidator.cs
-│   ├── UpdateFruitValidator.cs
-│   ├── CreateProductValidator.cs
-│   ├── UpdateProductValidator.cs
-│   ├── RegisterValidator.cs
-│   └── LoginValidator.cs
-├── wwwroot/
-│   ├── index.html                  # 待辦清單頁（需登入，9-7）
-│   ├── login.html                  # 登入、註冊、查看 token（9-7）
-│   ├── fruits.html                 # 水果清單頁（第 5 章前端範例的集合）
-│   ├── products.html               # 商品管理頁
-│   ├── upload.html                 # 檔案上傳頁
-│   ├── sync-demo.html              # 同步 vs 非同步示範
-│   ├── sse-demo.html               # SSE 推送示範
-│   ├── uploads/                    # 上傳的檔案（已 gitignore，dotnet watch 也不監看）
-│   ├── js/
-│   │   ├── api.js                  # fetch 封裝（5-4）
-│   │   ├── toast.js                # Toast 通知（5-6）
-│   │   └── utils.js                # escapeHtml、debounce（5-5、5-9）
-│   └── css/
-│       └── style.css
-├── MyAjaxApi.http                  # 所有端點的測試請求
-├── Program.cs                      # 服務注入 + Middleware 設定（2-4）
-└── appsettings.json                # 連線字串、Jwt 設定（Key 在 user-secrets）
+ajax-dotnet-course/
+├── MyAjaxApi/                          # ASP.NET Core Web API 專案（後端 + wwwroot 前端頁面）
+│   ├── Controllers/
+│   │   ├── BasicsController.cs         # GET /api/basics，最簡單的 Controller（講義 3-1）
+│   │   ├── FruitsController.cs         # In-Memory CRUD /api/fruits，含搜尋/排序/分頁、slow、upload（3-4、5-8、4-3、6-1）
+│   │   ├── TodosController.cs          # EF Core CRUD /api/todos（6-6、7-4）
+│   │   ├── ProductsController.cs       # EF Core CRUD /api/products（7-4）
+│   │   ├── NotificationsController.cs  # SSE /api/notifications/stream（6-2）
+│   │   └── AuthController.cs           # JWT 註冊、登入、/me（9-6）
+│   ├── Data/
+│   │   └── AppDbContext.cs             # EF Core DbContext，含 CreatedAt 的 UTC 值轉換器（5-7）
+│   ├── Infrastructure/
+│   │   └── GlobalExceptionHandler.cs   # 全域例外處理（8-3）
+│   ├── Models/
+│   │   ├── Fruit.cs                    # Fruit + DTOs（3-3）
+│   │   ├── PagedResult.cs              # 分頁回應外殼（5-8）
+│   │   ├── Product.cs                  # Product + DTOs（7-2）
+│   │   ├── Todo.cs                     # Todo + DTOs（6-6）
+│   │   └── User.cs                     # User + 註冊、登入 DTOs（9-3）
+│   ├── Services/
+│   │   └── TokenService.cs             # 簽發 JWT；JwtSettings 對應 appsettings 的 Jwt 區段（9-4）
+│   ├── Validators/                     # FluentValidation 驗證規則（8-2）
+│   │   ├── CreateFruitValidator.cs
+│   │   ├── UpdateFruitValidator.cs
+│   │   ├── CreateProductValidator.cs
+│   │   ├── UpdateProductValidator.cs
+│   │   ├── RegisterValidator.cs
+│   │   └── LoginValidator.cs
+│   ├── wwwroot/
+│   │   ├── index.html                  # 待辦清單頁（需登入，9-7）
+│   │   ├── login.html                  # 登入、註冊、查看 token（9-7）
+│   │   ├── fruits.html                 # 水果清單頁（第 5 章前端範例的集合）
+│   │   ├── products.html               # 商品管理頁
+│   │   ├── upload.html                 # 檔案上傳頁
+│   │   ├── sync-demo.html              # 同步 vs 非同步示範
+│   │   ├── sse-demo.html               # SSE 推送示範
+│   │   ├── uploads/                    # 上傳的檔案（已 gitignore，dotnet watch 也不監看）
+│   │   ├── js/
+│   │   │   ├── api.js                  # fetch 封裝（5-4）
+│   │   │   ├── toast.js                # Toast 通知（5-6）
+│   │   │   └── utils.js                # escapeHtml、debounce（5-5、5-9）
+│   │   └── css/
+│   │       └── style.css
+│   ├── MyAjaxApi.http                  # 所有端點的測試請求
+│   ├── Program.cs                      # 服務注入 + Middleware 設定（2-4）
+│   └── appsettings.json                # 連線字串、Jwt 設定（Key 在 user-secrets）
+├── start.bat                           # 啟動腳本：切到 MyAjaxApi 執行 dotnet watch run（cmd / PowerShell 皆可）
+├── start.ps1                           # 同上的 PowerShell 版；需先放行執行原則，見「啟動方式」
+└── README.md
 ```
 
 ---
