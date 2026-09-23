@@ -53,6 +53,12 @@ dotnet user-secrets set "Jwt:Key" "$(openssl rand -base64 48)"
 
 沒有 openssl 的環境，隨便打一串至少 32 個字元的亂碼也可以。`Issuer`、`Audience`、`ExpireMinutes` 在 `appsettings.json` 的 `Jwt` 區段。
 
+金鑰實際存在使用者目錄，不在專案裡：macOS／Linux 是 `~/.microsoft/usersecrets/<UserSecretsId>/secrets.json`，Windows 是 `%APPDATA%\Microsoft\UserSecrets\<UserSecretsId>\secrets.json`。`<UserSecretsId>` 就是 `MyAjaxApi.csproj` 裡的那串 GUID，已進 git。因此：
+
+- 同一台電腦重新 clone：不用重設，csproj 帶著同一個 ID，啟動時會自動找到。
+- 換一台電腦：只要再執行一次上面的 `set` 指令，不需要 `dotnet user-secrets init`。
+- user-secrets 只在 Development 環境生效；正式環境改用環境變數 `Jwt__Key`（雙底線代表冒號）。
+
 ### 流程
 
 1. `POST /api/auth/register`：密碼用 bcrypt 雜湊後存入 `Users` 資料表，明文不落地。
