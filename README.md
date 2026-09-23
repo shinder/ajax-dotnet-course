@@ -46,18 +46,34 @@ dotnet watch run     # 或 dotnet run；watch 會在改檔後自動重新編譯�
 
 金鑰不放在 `appsettings.json`（會進 git），改用 .NET 的 user-secrets 存在使用者目錄下：
 
+macOS／Linux：
+
 ```bash
 cd MyAjaxApi
 dotnet user-secrets set "Jwt:Key" "$(openssl rand -base64 48)"
 ```
 
-沒有 openssl 的環境，隨便打一串至少 32 個字元的亂碼也可以。`Issuer`、`Audience`、`ExpireMinutes` 在 `appsettings.json` 的 `Jwt` 區段。
+Windows（PowerShell）：
+
+```powershell
+cd MyAjaxApi
+dotnet user-secrets set "Jwt:Key" ([Convert]::ToBase64String((1..48 | ForEach-Object { Get-Random -Maximum 256 }) -as [byte[]]))
+```
+
+Windows（cmd）或任何環境，直接打一串至少 32 個字元的亂碼也可以：
+
+```cmd
+cd MyAjaxApi
+dotnet user-secrets set "Jwt:Key" "any-random-string-at-least-32-characters-long-here"
+```
+
+指令要在有 `.csproj` 的 `MyAjaxApi` 資料夾執行。設定完用 `dotnet user-secrets list` 確認有 `Jwt:Key`。`Issuer`、`Audience`、`ExpireMinutes` 在 `appsettings.json` 的 `Jwt` 區段。
 
 金鑰實際存在使用者目錄，不在專案裡：macOS／Linux 是 `~/.microsoft/usersecrets/<UserSecretsId>/secrets.json`，Windows 是 `%APPDATA%\Microsoft\UserSecrets\<UserSecretsId>\secrets.json`。`<UserSecretsId>` 就是 `MyAjaxApi.csproj` 裡的那串 GUID，已進 git。因此：
 
 - 同一台電腦重新 clone：不用重設，csproj 帶著同一個 ID，啟動時會自動找到。
 - 換一台電腦：只要再執行一次上面的 `set` 指令，不需要 `dotnet user-secrets init`。
-- user-secrets 只在 Development 環境生效；正式環境改用環境變數 `Jwt__Key`（雙底線代表冒號）。
+- user-secrets 只在 Development 環境生效。`dotnet run`、`dotnet watch run`、Visual Studio 啟動都會套用 launchSettings.json 的 Development；直接執行 bin 底下的 exe 則是 Production，會讀不到。正式環境改用環境變數 `Jwt__Key`（雙底線代表冒號）。
 
 ### 流程
 
