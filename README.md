@@ -46,7 +46,7 @@ Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 | 檔案上傳：fetch + FormData 與 XHR 進度條 | <http://localhost:5269/upload.html> | 6-1 |
 | 同步 vs 非同步 XHR | <http://localhost:5269/sync-demo.html> | 4-3 |
 | SSE 伺服器推送 | <http://localhost:5269/sse-demo.html> | 6-2 |
-| JWT 登入、註冊、查看 token | <http://localhost:5269/login.html> | 附錄：JWT |
+| JWT 登入、註冊、查看 token | <http://localhost:5269/login.html> | 第 9 章 |
 | Swagger API 文件 | <http://localhost:5269/swagger> | 2-5 |
 
 > 第一次啟動會自動建立 `app.db`（SQLite），不需要手動執行 Migration。
@@ -155,7 +155,7 @@ MyAjaxApi/
 │   ├── TodosController.cs          # EF Core CRUD /api/todos（6-6、7-4）
 │   ├── ProductsController.cs       # EF Core CRUD /api/products（7-4）
 │   ├── NotificationsController.cs  # SSE /api/notifications/stream（6-2）
-│   └── AuthController.cs           # JWT 註冊、登入、/me
+│   └── AuthController.cs           # JWT 註冊、登入、/me（9-6）
 ├── Data/
 │   └── AppDbContext.cs             # EF Core DbContext，含 CreatedAt 的 UTC 值轉換器（5-7）
 ├── Infrastructure/
@@ -165,9 +165,9 @@ MyAjaxApi/
 │   ├── PagedResult.cs              # 分頁回應外殼（5-8）
 │   ├── Product.cs                  # Product + DTOs（7-2）
 │   ├── Todo.cs                     # Todo + DTOs（6-6）
-│   └── User.cs                     # User + 註冊、登入 DTOs
+│   └── User.cs                     # User + 註冊、登入 DTOs（9-3）
 ├── Services/
-│   └── TokenService.cs             # 簽發 JWT；JwtSettings 對應 appsettings 的 Jwt 區段
+│   └── TokenService.cs             # 簽發 JWT；JwtSettings 對應 appsettings 的 Jwt 區段（9-4）
 ├── Validators/                     # FluentValidation 驗證規則（8-2）
 │   ├── CreateFruitValidator.cs
 │   ├── UpdateFruitValidator.cs
@@ -176,8 +176,8 @@ MyAjaxApi/
 │   ├── RegisterValidator.cs
 │   └── LoginValidator.cs
 ├── wwwroot/
-│   ├── index.html                  # 待辦清單頁（需登入）
-│   ├── login.html                  # 登入、註冊、查看 token
+│   ├── index.html                  # 待辦清單頁（需登入，9-7）
+│   ├── login.html                  # 登入、註冊、查看 token（9-7）
 │   ├── fruits.html                 # 水果清單頁（第 5 章前端範例的集合）
 │   ├── products.html               # 商品管理頁
 │   ├── upload.html                 # 檔案上傳頁

@@ -16,7 +16,7 @@ async function apiFetch(path, options = {}) {
     });
 
     if (res.status === 401) {
-        // token 失效就清掉；本範例沒有登入頁，正式專案通常會在此導向登入
+        // token 失效就清掉；要不要顯示登入提示或導向登入頁，由各頁面自行決定（見 index.html、login.html）
         localStorage.removeItem('token');
     }
 
