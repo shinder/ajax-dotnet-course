@@ -126,6 +126,8 @@ dotnet user-secrets set "Jwt:Key" "any-random-string-at-least-32-characters-long
 
 **確認密碼有雜湊**
 
+用 [Letos](https://letos.org/) 開 `MyAjaxApi/app.db` 看 `Users` 資料表，或用命令列：
+
 ```bash
 sqlite3 MyAjaxApi/app.db "select Username, PasswordHash from Users;"
 ```
