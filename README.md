@@ -7,6 +7,16 @@ ASP.NET Core 10 Web API + 原生 JavaScript 前端，作為課程講義《AJAX +
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
 - [dotnet-ef 工具](https://learn.microsoft.com/ef/core/cli/dotnet)（建立 Migration 時才需要）
 
+建議工具（選用，對應講義附錄 D）：
+
+| 工具 | 用途 |
+| ---- | ---- |
+| Visual Studio 2022 或 VS Code + C# Dev Kit | C# 開發 IDE |
+| REST Client（VS Code 擴充套件） | 直接開 `MyAjaxApi.http` 逐一送出請求 |
+| Postman 或 Bruno | API 測試 |
+| [Letos](https://letos.org/) | 瀏覽與編輯 SQLite 資料庫 `app.db`，免安裝，前身為 SQLiteStudio |
+| VS Code Live Server | 在 5500 埠開前端頁面，示範 CORS |
+
 ---
 
 ## 啟動方式
