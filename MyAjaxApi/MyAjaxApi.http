@@ -77,16 +77,73 @@ Content-Type: image/png
 < ./wwwroot/uploads/test.png
 ------Boundary--
 
-### ───────── 第 6 章：Todos（EF Core） ─────────
+### ───────── JWT 登入：Auth ─────────
 
-### 取得全部
+### 註冊 → 201（帳號重複 → 409）
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "password": "secret123"
+}
+
+### 註冊但驗證失敗 → 400 + errors
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "a",
+  "password": "123"
+}
+
+### 登入 → 200 + token。
+### 「# @name login」讓後面的請求可以用 {{login.response.body.token}} 取出這次回應的 token
+# @name login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "password": "secret123"
+}
+
+### 密碼錯誤 → 401（訊息不區分帳號不存在或密碼錯誤）
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "password": "wrong"
+}
+
+### 帶 token 查目前登入者 → 200（先送上面的登入請求，token 才會有值）
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{login.response.body.token}}
+
+### 不帶 token → 401
+GET {{baseUrl}}/api/auth/me
+
+### 竄改過的 token（簽章對不上）→ 401
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibmFtZSI6ImhhY2tlciJ9.invalid
+
+### ───────── 第 6 章：Todos（EF Core，需登入） ─────────
+
+### 不帶 token → 401
 GET {{baseUrl}}/api/todos
+
+### 取得全部（以下請求都帶 token，請先送出上面的登入請求）
+GET {{baseUrl}}/api/todos
+Authorization: Bearer {{login.response.body.token}}
 
 ### 取得單筆
 GET {{baseUrl}}/api/todos/1
+Authorization: Bearer {{login.response.body.token}}
 
 ### 新增
 POST {{baseUrl}}/api/todos
+Authorization: Bearer {{login.response.body.token}}
 Content-Type: application/json
 
 {
@@ -95,6 +152,7 @@ Content-Type: application/json
 
 ### 部分更新：只改 isDone（PATCH）
 PATCH {{baseUrl}}/api/todos/1
+Authorization: Bearer {{login.response.body.token}}
 Content-Type: application/json
 
 {
@@ -103,6 +161,7 @@ Content-Type: application/json
 
 ### 刪除
 DELETE {{baseUrl}}/api/todos/1
+Authorization: Bearer {{login.response.body.token}}
 
 ### ───────── 第 7 章：Products（EF Core + 驗證） ─────────
 

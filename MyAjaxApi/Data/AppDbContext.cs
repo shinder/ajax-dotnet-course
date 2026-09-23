@@ -16,6 +16,7 @@ public class AppDbContext : DbContext
     // 使用 => 語法讓屬性不可被外部設定。
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Todo> Todos => Set<Todo>();
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -27,5 +28,10 @@ public class AppDbContext : DbContext
             .HasConversion(
                 v => v,
                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+        // 帳號不可重複：在資料庫層加唯一索引，即使兩個請求同時註冊同一帳號也擋得住
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Username)
+            .IsUnique();
     }
 }

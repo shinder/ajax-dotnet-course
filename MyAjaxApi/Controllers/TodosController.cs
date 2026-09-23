@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyAjaxApi.Data;
@@ -7,6 +8,9 @@ namespace MyAjaxApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+// [Authorize] 放在類別上，整個 Controller 的端點都要帶有效的 JWT 才能呼叫；
+// 沒帶或無效一律回 401（見 Program.cs 的 AddJwtBearer 設定與 wwwroot/login.html）。
+[Authorize]
 public class TodosController : ControllerBase
 {
     private readonly AppDbContext _db;
