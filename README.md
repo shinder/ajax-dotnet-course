@@ -16,6 +16,26 @@ cd MyAjaxApi
 dotnet watch run     # 或 dotnet run；watch 會在改檔後自動重新編譯（講義 2-2）
 ```
 
+專案根目錄也提供了啟動腳本，會自動切到 `MyAjaxApi` 執行 `dotnet watch run --no-hot-reload`，不必先 `cd`：
+
+| 腳本 | 執行方式 | 說明 |
+| ---- | -------- | ---- |
+| `start.bat` | `.\start.bat`（cmd 或 PowerShell 皆可） | 不受 PowerShell 執行原則限制，最省事 |
+| `start.ps1` | `.\start.ps1` | 需先放行執行原則，見下方 |
+| macOS / Linux | `cd MyAjaxApi && dotnet watch run` | 直接下指令即可 |
+
+Windows PowerShell 預設執行原則是 `Restricted`，直接執行 `.\start.ps1` 會出現「因為這個系統上已停用指令碼執行」的錯誤。擇一處理：
+
+```powershell
+# 只放寬這一次，不改系統設定
+powershell -ExecutionPolicy Bypass -File .\start.ps1
+
+# 或：設定一次，之後直接 .\start.ps1（只影響目前使用者，不需要系統管理員）
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+```
+
+> 若專案是從網路下載的 zip 解壓出來，Windows 會把檔案標記為「來自網際網路」，RemoteSigned 仍會擋，先執行 `Unblock-File .\start.ps1` 解除封鎖。
+
 啟動後開啟瀏覽器：
 
 | 頁面 | 網址 | 對應講義 |
