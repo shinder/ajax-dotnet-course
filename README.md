@@ -262,54 +262,58 @@ dotnet watch run
 
 ## API 端點
 
+測試端點前要先把伺服器跑起來（見上方「啟動方式」，`.\start.bat` 或到 `MyAjaxApi` 執行 `dotnet watch run`），所有路徑的主機都是 <http://localhost:5269>。要逐一送出請求，用 VS Code REST Client 開 `MyAjaxApi.http`，或開 <http://localhost:5269/swagger>。表格最後一欄是講義的對應章節。
+
 ### Basics
 
-| 方法 | 路徑 | 說明 |
-|------|------|------|
-| GET | `/api/basics` | 回傳 `{ "message": "Hello API" }` |
+| 方法 | 路徑 | 說明 | 講義 |
+|------|------|------|------|
+| GET | `/api/basics` | 回傳 `{ "message": "Hello API" }` | 3-1 |
 
 ### Fruits（In-Memory，重啟後歸零）
 
-| 方法 | 路徑 | 說明 |
-|------|------|------|
-| GET | `/api/fruits?name=&sort=&page=&size=` | 列表；`sort` 可為 `id`、`name`、`price`、`price_desc`；回傳 `{ items, total, page, size, totalPages }` |
-| GET | `/api/fruits/{id}` | 取得單筆 |
-| POST | `/api/fruits` | 新增（名稱 1 到 20 字、價格 1 到 10000） |
-| PUT | `/api/fruits/{id}` | 完整更新 |
-| DELETE | `/api/fruits/{id}` | 刪除 |
-| GET | `/api/fruits/slow?seconds=10` | 等待指定秒數（1 到 30）後回傳全部，供同步 vs 非同步示範 |
-| POST | `/api/fruits/upload` | `multipart/form-data` 上傳圖片（jpg、png、gif、webp，最大 2 MB），存到 `wwwroot/uploads` |
+| 方法 | 路徑 | 說明 | 講義 |
+|------|------|------|------|
+| GET | `/api/fruits?name=&sort=&page=&size=` | 列表；`sort` 可為 `id`、`name`、`price`、`price_desc`；回傳 `{ items, total, page, size, totalPages }` | 5-8、5-9 |
+| GET | `/api/fruits/{id}` | 取得單筆 | 3-4 |
+| POST | `/api/fruits` | 新增（名稱 1 到 20 字、價格 1 到 10000） | 3-4、8-2、8-4 |
+| PUT | `/api/fruits/{id}` | 完整更新 | 3-4、5-10 |
+| DELETE | `/api/fruits/{id}` | 刪除 | 3-4、6-3 |
+| GET | `/api/fruits/slow?seconds=10` | 等待指定秒數（1 到 30）後回傳全部，供同步 vs 非同步示範 | 4-3 |
+| POST | `/api/fruits/upload` | `multipart/form-data` 上傳圖片（jpg、png、gif、webp，最大 2 MB），存到 `wwwroot/uploads` | 6-1 |
 
 ### Auth（JWT）
 
-| 方法 | 路徑 | 說明 |
-|------|------|------|
-| POST | `/api/auth/register` | 註冊（帳號 3 到 20 字英數底線、密碼至少 6 字）；重複回 409 |
-| POST | `/api/auth/login` | 登入，回傳 `{ token, expiresAt, username }`；失敗回 401 |
-| GET | `/api/auth/me` | 需帶 token，回傳 `{ id, username }` |
+| 方法 | 路徑 | 說明 | 講義 |
+|------|------|------|------|
+| POST | `/api/auth/register` | 註冊（帳號 3 到 20 字英數底線、密碼至少 6 字）；重複回 409 | 9-3、9-6 |
+| POST | `/api/auth/login` | 登入，回傳 `{ token, expiresAt, username }`；失敗回 401 | 9-4、9-6 |
+| GET | `/api/auth/me` | 需帶 token，回傳 `{ id, username }` | 9-5 |
 
 ### Todos（EF Core，需帶 token）
 
-| 方法 | 路徑 | 說明 |
-|------|------|------|
-| GET | `/api/todos` | 取得所有待辦 |
-| GET | `/api/todos/{id}` | 取得單筆 |
-| POST | `/api/todos` | 新增待辦 |
-| PATCH | `/api/todos/{id}` | 更新完成狀態 |
-| DELETE | `/api/todos/{id}` | 刪除待辦 |
+整個 Controller 加了 `[Authorize]`（講義 9-5），沒帶或帶無效 token 一律 401。
+
+| 方法 | 路徑 | 說明 | 講義 |
+|------|------|------|------|
+| GET | `/api/todos` | 取得所有待辦 | 6-6、7-4 |
+| GET | `/api/todos/{id}` | 取得單筆 | 6-6 |
+| POST | `/api/todos` | 新增待辦 | 6-6、7-4 |
+| PATCH | `/api/todos/{id}` | 更新完成狀態 | 6-6 |
+| DELETE | `/api/todos/{id}` | 刪除待辦 | 6-6、6-3 |
 
 ### Products（EF Core）
 
-| 方法 | 路徑 | 說明 |
-|------|------|------|
-| GET | `/api/products` | 取得所有商品（最新的在前） |
-| GET | `/api/products/{id}` | 取得單筆商品 |
-| POST | `/api/products` | 新增商品（`imageUrl` 選填，有填必須是 https） |
-| PUT | `/api/products/{id}` | 更新商品 |
-| DELETE | `/api/products/{id}` | 刪除商品 |
+| 方法 | 路徑 | 說明 | 講義 |
+|------|------|------|------|
+| GET | `/api/products` | 取得所有商品（最新的在前） | 7-4 |
+| GET | `/api/products/{id}` | 取得單筆商品 | 7-4 |
+| POST | `/api/products` | 新增商品（`imageUrl` 選填，有填必須是 https） | 7-4、8-2 |
+| PUT | `/api/products/{id}` | 更新商品 | 7-4 |
+| DELETE | `/api/products/{id}` | 刪除商品 | 7-4 |
 
 ### Notifications（SSE）
 
-| 方法 | 路徑 | 說明 |
-|------|------|------|
-| GET | `/api/notifications/stream` | `text/event-stream`，每 2 秒推送 `{ seq, time, fruitCount }` |
+| 方法 | 路徑 | 說明 | 講義 |
+|------|------|------|------|
+| GET | `/api/notifications/stream` | `text/event-stream`，每 2 秒推送 `{ seq, time, fruitCount }` | 6-2 |
