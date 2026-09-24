@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-hant-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Promise</title>
+  </head>
+  <body>
+    <button id="btn" onclick="myTest()">Run</button>
+
+    <hr />
+
+    <pre id="my"></pre>
+
+    <script>
+      function myPromise(n = "a") {
+        return new Promise((resolve, reject) => {
+          const ms = 100 + Math.random() * 500;
+          setTimeout(() => {
+            resolve({ n, ms });
+          }, ms);
+        });
+      }
+
+      function myTest() {
+        const arr = [];
+        for (let i = 0; i < 10; i++) {
+          arr.push(myPromise("a" + i));
+          // myPromise("a" + i).then((r) => console.log(r));
+        }
+        // 全部都做完後再通知
+        Promise.all(arr).then((r) => console.log(r));
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-hant-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>fetch get</title>
+  </head>
+  <body>
+    <button id="btn" onclick="myTest()">讀取資料</button>
+
+    <hr />
+
+    <pre id="my"></pre>
+
+    <script>
+      async function myTest() {
+        try {
+          const r = await fetch(`http://localhost:5269/api/aaa`);
+          const result = await r.text();
+          console.log({ result });
+          my.innerHTML = result;
+        } catch (err) {
+          console.log(`發生錯誤`);
+        }
+      }
+    </script>
+  </body>
+</html>

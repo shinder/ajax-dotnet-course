@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-hant-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>fetch</title>
+  </head>
+  <body>
+    <button id="btn" onclick="loadData()">載入資料</button>
+    <input type="text" />
+
+    <hr />
+
+    <pre id="my"></pre>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.20.0/dist/axios.min.js"></script>
+    <script>
+      const my = document.querySelector("#my");
+
+      function loadData() {
+        axios.get("/api/Fruits").then((r) => {
+          console.log(r);
+          console.log(r.data);
+        });
+      }
+    </script>
+  </body>
+</html>

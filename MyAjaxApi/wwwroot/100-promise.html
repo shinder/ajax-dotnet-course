@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-hant-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>fetch</title>
+  </head>
+  <body>
+    <button id="btn" onclick="myTest()">Run</button>
+
+    <hr />
+
+    <pre id="my"></pre>
+
+    <script>
+      function myTest() {
+        console.log(1);
+        const p = new Promise((resolve, reject) => {
+          console.log(2);
+          // 花費時間的工作
+          setTimeout(() => {
+            console.log(3);
+            // resolve(123); // 成功處理好
+            reject(456);
+          }, 2000);
+        });
+        console.log(4);
+        p.then((result) => {
+          console.log(5);
+          console.log({ result });
+        }).catch((err) => {
+          console.warn({ err });
+        });
+        console.log(6);
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-hant-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XHR-readyState</title>
+  </head>
+  <body>
+    <button id="btn" onclick="loadData()">載入資料</button>
+    <input type="text" />
+
+    <hr />
+
+    <pre id="my"></pre>
+
+    <script>
+      const my = document.querySelector("#my");
+
+      function loadData() {
+        const xhr = new XMLHttpRequest();
+
+        xhr.addEventListener("readystatechange", function () {
+          console.log("readyState:", xhr.readyState);
+          console.log("status:", xhr.status);
+          console.log("responseText:", xhr.responseText);
+        });
+
+        xhr.open("GET", "/api/fruits");
+
+        xhr.onload = function () {
+          const obj = JSON.parse(xhr.responseText); // 轉換成 JS 物件
+          my.innerHTML = JSON.stringify(obj, null, 4);
+        };
+        xhr.onerror = function () {
+          console.log("發生錯誤");
+        };
+        // 4. 送出請求
+        xhr.send();
+      }
+    </script>
+  </body>
+</html>

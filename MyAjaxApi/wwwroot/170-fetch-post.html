@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-hant-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>fetch post</title>
+  </head>
+  <body>
+    <button id="btn" onclick="myTest()">新增資料</button>
+
+    <hr />
+
+    <pre id="my"></pre>
+
+    <script>
+      async function myTest() {
+        const payload = {
+          name: "水果一",
+          price: 30,
+        };
+
+        const r = await fetch(`http://localhost:5269/api/Fruits`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+        const result = await r.json();
+
+        console.log(result);
+      }
+    </script>
+  </body>
+</html>

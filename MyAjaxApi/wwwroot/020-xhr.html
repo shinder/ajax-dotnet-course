@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-hant-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <pre id="my"></pre>
+
+    <script>
+      const my = document.querySelector("#my");
+      // 1. 建立 XHR 物件
+      const xhr = new XMLHttpRequest();
+      // 2. 設定
+      xhr.open("GET", "http://localhost:5269/api/Fruits");
+
+      // 3. 註冊事件處理器
+      xhr.onload = function () {
+        my.innerHTML = xhr.responseText;
+      };
+      xhr.onerror = function () {
+        console.log("發生錯誤");
+      };
+      // 4. 送出請求
+      xhr.send();
+    </script>
+  </body>
+</html>

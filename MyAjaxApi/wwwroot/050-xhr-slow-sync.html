@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-hant-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XHR-slow-sync</title>
+  </head>
+  <body>
+    <button id="btn" onclick="loadData()">載入資料</button>
+    <input type="text" />
+
+    <hr />
+
+    <pre id="my"></pre>
+
+    <script>
+      const my = document.querySelector("#my");
+
+      function loadData() {
+        // 1. 建立 XHR 物件
+        const xhr = new XMLHttpRequest();
+        // 2. 設定, 使用 "同步" 的方式處理
+        xhr.open("GET", "/api/fruits/slow?seconds=5", false);
+
+        // 3. 送出請求
+        xhr.send(); // 拿到資料後才會往下走
+
+        const obj = JSON.parse(xhr.responseText); // 轉換成 JS 物件
+        my.innerHTML = JSON.stringify(obj, null, 4);
+      }
+    </script>
+  </body>
+</html>

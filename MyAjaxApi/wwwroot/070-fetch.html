@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-hant-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>fetch</title>
+  </head>
+  <body>
+    <button id="btn" onclick="loadData()">載入資料</button>
+    <input type="text" />
+
+    <hr />
+
+    <pre id="my"></pre>
+
+    <script>
+      const my = document.querySelector("#my");
+
+      function loadData() {
+        /*
+        fetch("/api/Fruits")
+          .then(function (response) {
+            // readyState: 2
+            const { ok, status, type } = response; // 解構
+            console.log(response);
+            console.log({ ok, status, type });
+            // return response.json(); // 後面進來的資料完成後做 JSON.parse()
+            return response.text(); // 後面進來的資料完成後看成是一般文字資料
+          })
+          .then((result) => {
+            // readyState: 4
+            console.log(result);
+          });
+          */
+        fetch("/api/Fruits")
+          .then((r) => r.json())
+          .then((result) => {
+            console.log(result);
+          })
+          .catch((err) => {
+            console.warn(err);
+          });
+      }
+    </script>
+  </body>
+</html>

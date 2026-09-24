@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-hant-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>fetch</title>
+  </head>
+  <body>
+    <button id="btn" onclick="loadData()">載入資料</button>
+    <input type="text" />
+
+    <hr />
+
+    <pre id="my"></pre>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+      const my = $("#my");
+
+      function loadData() {
+        /*
+        $.get("/api/Fruits", function (result) {
+          console.log(result); // 預設是拿到 JS 物件
+        });
+        */
+        $.get(
+          "/api/Fruits",
+          { a: 1, b: 2 },
+          function (result) {
+            console.log(result); // 預設是拿到 JS 物件
+            my.text(result);
+          },
+          "text", // 指定拿到純文字的資料
+        );
+      }
+    </script>
+  </body>
+</html>

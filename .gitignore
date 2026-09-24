@@ -11,3 +11,4 @@ docs/ajax-restful-dotnet.md
 
 # 6-1 檔案上傳的測試檔，不進版控
 MyAjaxApi/wwwroot/uploads/
+.DS_Store
