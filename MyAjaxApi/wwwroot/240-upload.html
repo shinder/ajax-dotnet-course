@@ -48,6 +48,8 @@
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
     ></script>
     <script>
+      // 上傳檔案要用 multipart/form-data，直接把 FormData 當 body 交給 fetch 即可。
+      // 注意「不要」自己設 Content-Type，瀏覽器會連 boundary 一起產生；自己設反而會壞
       const mySubmit = async (e) => {
         e.preventDefault(); // 避免預設行為 (不要讓表單送出)
 
@@ -57,9 +59,9 @@
           method: "POST",
           body: fd, // FormData, Content-Type 自動預設 multipart/form-data
         });
-        const result = await r.json();
+        const result = await r.json(); // 後端回 { url, ... }
 
-        $("#myimg").attr("src", result.url);
+        $("#myimg").attr("src", result.url); // 把上傳後的網址放進 <img> 立刻預覽
 
         console.log(result);
       };

@@ -84,6 +84,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+      // 先建立 Modal 物件，上傳成功後才呼叫 show()
       const myModal = new bootstrap.Modal("#exampleModal");
 
       const mySubmit = async (e) => {
@@ -95,12 +96,14 @@
           method: "POST",
           body: fd, // FormData, Content-Type 自動預設 multipart/form-data
         });
+        // fetch 遇到 400、500 不會丟例外（見 190），要自己檢查 r.ok
         if (!r.ok) {
           alert("上傳失敗");
           return;
         }
         const result = await r.json();
         console.log(result);
+        // 有 url 才算成功：放進 <img> 並打開 Modal 顯示結果
         if (result.url) {
           $("#myimg").attr("src", result.url);
           myModal.show();

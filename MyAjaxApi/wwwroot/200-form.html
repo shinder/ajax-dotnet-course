@@ -21,8 +21,12 @@
       <input type="submit" />
     </form>
     <script>
-      const pw = document.querySelectorAll("input")[2];
+      // 這頁沒有 AJAX：按 submit 是瀏覽器傳統的表單送出，整頁會導向 action 的網址。
+      // 用 DevTools 的 Network 觀察：Content-Type 是 application/x-www-form-urlencoded，
+      // body 是 aa=1&bb=%E6%82%A8%E5%A5%BD&cc=（中文被 URL 編碼）
+      const pw = document.querySelectorAll("input")[2]; // 第三個 input 是密碼欄
 
+      // 切換 type 屬性就能顯示或隱藏密碼，和表單送出無關
       function togglePw() {
         const t = pw.getAttribute("type");
         if (t === "password") {

@@ -13,6 +13,10 @@
     <pre id="my"></pre>
 
     <script>
+      // 用 fetch 送 POST，三個要素缺一不可：
+      //   1. method: "POST"
+      //   2. headers 的 Content-Type 告訴後端 body 是 JSON，[ApiController] 才會做 Model Binding
+      //   3. body 必須是字串，所以物件要先 JSON.stringify
       async function myTest() {
         const payload = {
           name: "水果一",
@@ -26,7 +30,7 @@
           },
           body: JSON.stringify(payload),
         });
-        const result = await r.json();
+        const result = await r.json(); // 後端回 201 + 新增後的物件（含產生的 id）
 
         console.log(result);
       }

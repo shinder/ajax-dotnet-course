@@ -16,11 +16,13 @@
     <script>
       const my = document.querySelector("#my");
 
+      // 呼叫會等 5 秒才回應的 API。請求期間試著在輸入框打字：
+      // 畫面不會卡，因為 XHR 預設是非同步，send() 之後主執行緒就空出來了
       function loadData() {
         // 1. 建立 XHR 物件
         const xhr = new XMLHttpRequest();
         // 2. 設定
-        xhr.open("GET", "/api/fruits/slow?seconds=5");
+        xhr.open("GET", "/api/fruits/slow?seconds=5"); // 後端故意等 5 秒才回
 
         // 3. 註冊事件處理器
         xhr.onload = function () {

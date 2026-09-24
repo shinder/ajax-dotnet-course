@@ -22,6 +22,8 @@
         });
       }
 
+      // 用「立即執行的 async 箭頭函式」（IIFE）包住 await 迴圈，一般函式裡就能用 await。
+      // async 函式本身回傳 Promise，所以可以在後面接 .then 得知整個迴圈做完了
       function myTest() {
         (async () => {
           for (let i = 0; i < 10; i++) {
