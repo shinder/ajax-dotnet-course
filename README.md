@@ -59,6 +59,8 @@ Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 | JWT 登入、註冊、查看 token | <http://localhost:5269/login.html> | 第 9 章 |
 | Swagger API 文件 | <http://localhost:5269/swagger> | 2-5 |
 
+`wwwroot/` 底下 `010` 到 `270` 的編號檔案是課堂示範用的最小範例，每個只聚焦一件事，對應章節與觀察重點見講義附錄 E。其中 `270-cors.html` 要用 VS Code Live Server 從 5500 埠開才看得到 CORS 錯誤；`020`、`170`、`180`、`190` 寫的是完整網址，也能從 Live Server 開。
+
 > 第一次啟動會自動建立 `app.db`（SQLite），不需要手動執行 Migration。
 > `EnsureCreated()` 只在資料庫不存在時建表，若 `app.db` 是加入 `Users` 之前建立的，請先刪掉再啟動。
 
