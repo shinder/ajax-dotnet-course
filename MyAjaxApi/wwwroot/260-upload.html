@@ -7,7 +7,7 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
     />
-    <title>250 FormData 上傳圖檔 + Bootstrap Modal</title>
+    <title>260 FormData 上傳圖檔，結果顯示在 Bootstrap Modal</title>
   </head>
   <body>
     <div class="container">
@@ -40,19 +40,7 @@
           </div>
         </div>
       </div>
-      <img src="" alt="" id="myimg" />
     </div>
-
-    <!-- Button trigger modal -->
-    <button
-      type="button"
-      class="btn btn-primary"
-      data-bs-toggle="modal"
-      data-bs-target="#exampleModal"
-    >
-      Launch demo modal
-    </button>
-
     <!-- Modal -->
     <div
       class="modal fade"
@@ -64,7 +52,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+            <h1 class="modal-title fs-5" id="exampleModalLabel">上傳結果</h1>
             <button
               type="button"
               class="btn-close"
@@ -72,26 +60,32 @@
               aria-label="Close"
             ></button>
           </div>
-          <div class="modal-body">...</div>
+          <div class="modal-body">
+            <div class="alert alert-success" role="alert">上傳成功！</div>
+            <div class="row mt-4">
+              <div class="col">
+                <img src="" alt="" id="myimg" class="img-fluid" width="100%" />
+              </div>
+            </div>
+          </div>
           <div class="modal-footer">
             <button
               type="button"
               class="btn btn-secondary"
               data-bs-dismiss="modal"
             >
-              Close
+              關閉
             </button>
-            <button type="button" class="btn btn-primary">Save changes</button>
           </div>
         </div>
       </div>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+      const myModal = new bootstrap.Modal("#exampleModal");
+
       const mySubmit = async (e) => {
         e.preventDefault(); // 避免預設行為 (不要讓表單送出)
 
@@ -101,11 +95,18 @@
           method: "POST",
           body: fd, // FormData, Content-Type 自動預設 multipart/form-data
         });
-        const result = await r.json(); // 視為純文字
-
-        $("#myimg").attr("src", result.url);
-
+        if (!r.ok) {
+          alert("上傳失敗");
+          return;
+        }
+        const result = await r.json();
         console.log(result);
+        if (result.url) {
+          $("#myimg").attr("src", result.url);
+          myModal.show();
+        } else {
+          alert("上傳失敗");
+        }
       };
 
       document.form1.addEventListener("submit", mySubmit); // 註冊事件處理器

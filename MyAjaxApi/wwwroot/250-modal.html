@@ -7,19 +7,9 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
     />
-    <title>245 Bootstrap Modal 測試</title>
+    <title>250 Bootstrap Modal 測試</title>
   </head>
   <body>
-    <!-- Button trigger modal -->
-    <button
-      type="button"
-      class="btn btn-primary"
-      data-bs-toggle="modal"
-      data-bs-target="#exampleModal"
-    >
-      Launch demo modal
-    </button>
-
     <!-- Modal -->
     <div
       class="modal fade"
@@ -53,14 +43,11 @@
         </div>
       </div>
     </div>
-    <!--
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-    ></script>
-  -->
-    <script
-      src="https://getbootstrap.com/docs/5.3/dist/js/bootstrap.bundle.min.js"
-    ></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const myModal = new bootstrap.Modal("#exampleModal");
+      // 在 console 中使用 myModal.show(); 顯示 modal
+      // 在 console 中使用 myModal.hide(); 隱藏 modal
+    </script>
   </body>
 </html>

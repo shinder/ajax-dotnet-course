@@ -57,7 +57,7 @@
           method: "POST",
           body: fd, // FormData, Content-Type 自動預設 multipart/form-data
         });
-        const result = await r.json(); // 視為純文字
+        const result = await r.json();
 
         $("#myimg").attr("src", result.url);
 
