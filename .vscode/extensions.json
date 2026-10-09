@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "ms-dotnettools.csdevkit",
+    "humao.rest-client",
+    "ritwickdey.liveserver",
+    "streetsidesoftware.code-spell-checker",
+    "stuart.unique-window-colors"
+  ]
+}

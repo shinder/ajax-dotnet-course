@@ -4,7 +4,9 @@ obj/
 *.db-shm
 *.db-wal
 .vs/
-.vscode/
+# VS Code：只保留 extensions.json（推薦外掛），其他個人設定不進版控
+.vscode/*
+!.vscode/extensions.json
 appsettings.Development.json
 
 docs/ajax-restful-dotnet.md
